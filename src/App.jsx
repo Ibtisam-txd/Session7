@@ -1,48 +1,68 @@
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import './App.css'
+import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Home from './components/Home';
 import About from './components/About';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
 import ParamComp from './components/ParamComp';
 import NotFound from './components/NotFound';
+import { Suspense, lazy } from 'react';
+const HeavyDataPage = lazy(() => import('./components/HeavyDataPage')); // Lazy load the new page
 
-// In App.jsx
-const HeavyDataPage = lazy(() => import('./components/HeavyDataPage'));
-
+const router =createBrowserRouter(
+  [
+    {
+      path:"/",
+      element:
+      <div>
+        <Navbar/>
+        <Home/>
+      </div>
+    },
+    {path:"/about",
+      element:
+      <div>
+        <Navbar/>
+        <About/>
+      </div>
+    },
+    {
+      path:"/dashboard",
+      element:
+      <div>
+        <Navbar/>
+        <Dashboard/>
+      </div>
+    },
+    {
+      path:"/student/:id",
+      element:
+      <div>
+        <Navbar/>
+        <ParamComp/>
+      </div>
+    },
+    {
+      path: "/heavy-data",
+      element: (
+        <Suspense fallback={<div>Loading heavy data page...</div>}>
+          <HeavyDataPage />
+        </Suspense>
+      ),
+    },
+    {
+      path:"*",
+      element:<NotFound/>
+    }
+  ]
+);
 function App() {
   return (
-    <Router>
-      <div>
-        <Navbar />
-        <Routes>
-          {/* Home Route */}
-          <Route path="/" element={<Home />} />
+    <div>
+      <RouterProvider router={router}/>
 
-          {/* About Route */}
-          <Route path="/about" element={<About />} />
-
-          {/* Dashboard Route with Nested Routes */}
-          <Route path="/dashboard" element={<Dashboard />}/>
-
-          {/* Route with Parameters */}
-          <Route path="/student/:id" element={<ParamComp />} />
-
-          {/* Lazy Loaded Heavy Data Page */}
-          <Route path="/heavy-data" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <HeavyDataPage />
-            </Suspense>
-          } />
-
-
-          {/* Catch-All Route for 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+    </div>
+  )
 }
 
-export default App;
+export default App

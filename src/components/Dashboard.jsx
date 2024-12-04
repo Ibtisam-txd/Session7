@@ -1,30 +1,27 @@
-import React from 'react';
-import {  useNavigate } from 'react-router-dom';
+import React from 'react'
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-
-  // Navigate to the About page
-  const handleNavigateToAbout = () => {
+  const navigate=useNavigate();
+  function handleClick() {
     navigate('/about');
-  };
-
-  // Navigate to the Home page
-  const handleNavigateToHome = () => {
+  }
+  function handleClickforHome(){
     navigate('/');
-  };
-
+  }
   return (
     <div>
-      <h1>Dashboard Page</h1>
-      <div>
-        <button onClick={handleNavigateToAbout}>Go To About</button>
-        <br /><br />
-        <button onClick={handleNavigateToHome}>Back to Home</button>
-      </div>
+      Dashboard Page
+      <br /><br />
+      <button onClick={handleClick}>
+        Go To About
+      </button>
+      <br /><br />
+      <button onClick={handleClickforHome}>Back to Home</button>
       <hr />
+      <Outlet/>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

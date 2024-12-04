@@ -1,8 +1,6 @@
-// HeavyDataPage.jsx
-
 import React, { useState, useEffect } from 'react';
 
-// Function to simulate a delay in data loading
+// Function to generate dummy data (for simulation)
 const generateDummyData = (num) => {
   const data = [];
   for (let i = 1; i <= num; i++) {
@@ -12,32 +10,55 @@ const generateDummyData = (num) => {
 };
 
 const HeavyDataPage = () => {
-  const [data, setData] = useState(null);
+  const totalItems = 500; // Total number of dummy data items
+  const itemsPerLoad = 50; // Number of items to load per batch
+  const [loadedData, setLoadedData] = useState([]); // Data currently loaded
+  const [loading, setLoading] = useState(false); // Loading indicator
+  const [loadedCount, setLoadedCount] = useState(0); // Number of items loaded so far
+  const data = generateDummyData(totalItems); // All dummy data
 
+  // Function to load more data
+  const loadMoreData = () => {
+    if (loading || loadedCount >= totalItems) return;
+
+    setLoading(true);
+    setTimeout(() => {
+      const newItems = data.slice(loadedCount, loadedCount + itemsPerLoad);
+      setLoadedData((prevData) => [...prevData, ...newItems]);
+      setLoadedCount((prevCount) => prevCount + itemsPerLoad);
+      setLoading(false);
+    }, 1500); // Simulate a 1.5-second delay
+  };
+
+  // Load initial data
   useEffect(() => {
-    // Simulating a delay of 2 seconds
-    const timeout = setTimeout(() => {
-      setData(generateDummyData(100));  // You can increase this number to simulate more data
-    }, 2000);  // Simulated delay of 2 seconds
-
-    return () => clearTimeout(timeout);
+    loadMoreData();
   }, []);
 
-  if (!data) {
-    return <div>Loading...</div>;  // This will show until data is available
-  }
+  // Scroll event handler to load more data when scrolling near the bottom
+  const handleScroll = (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.target;
+    if (scrollHeight - scrollTop <= clientHeight + 50) {
+      loadMoreData();
+    }
+  };
 
   return (
-    <div style={{ color: 'black' }}>
+    <div
+      style={{ maxHeight: '80vh', overflowY: 'auto', border: '1px solid #ddd', padding: '10px' }}
+      onScroll={handleScroll}
+    >
       <h1>Heavy Data Page (Lazy Loaded)</h1>
-      <p>This page contains a large amount of dummy data.</p>
+      <p>This page contains a large amount of dummy data, loaded in chunks as you scroll.</p>
       <div>
-        {data.map((item, index) => (
+        {loadedData.map((item, index) => (
           <p key={index}>{item}</p>
         ))}
+        {loading && <p style={{ textAlign: 'center' }}>Loading...</p>}
       </div>
     </div>
   );
 };
 
 export default HeavyDataPage;
+ 
